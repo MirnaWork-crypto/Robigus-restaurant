@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notre Carte - Restaurant Robigus</title>
+    <style>
+        /* Variables de couleurs */
+        :root {
+          --wood-dark: #3e2723;
+          --wood-medium: #5d4037;
+          --wood-light: #8d6e63;
+          --gold-primary: #d4af37;
+          --gold-secondary: #f7ef8a;
+          --text-light: #f5f5f5;
+          --text-dark: #212121;
+          --overlay: rgba(0, 0, 0, 0.6);
+        }
+        
+        /* Reset et styles de base */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Cormorant Garamond', serif;
+          color: var(--text-light);
+          background-color: var(--wood-dark);
+          line-height: 1.6;
+          overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Cinzel', serif;
+          font-weight: 600;
+          color: var(--gold-primary);
+          letter-spacing: 1px;
+        }
+        
+        a {
+          text-decoration: none;
+          color: inherit;
+          transition: all 0.3s ease;
+        }
+        
+        /* Header */
+        header {
+          background-color: var(--wood-medium);
+          padding: 15px 5%;
+          position: fixed;
+          width: 100%;
+          top: 0;
+          z-index: 1000;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+          border-bottom: 2px solid var(--gold-primary);
+        }
+        
+        .logo {
+          display: flex;
+          align-items: center;
+        }
+        
+        .logo-text {
+          font-family: 'Cinzel', serif;
+          font-size: 1.8rem;
+          color: var(--gold-primary);
+          font-weight: 700;
+          letter-spacing: 2px;
+        }
+        
+        .logo-accent {
+          color: var(--gold-secondary);
+          font-size: 1.2rem;
+          margin-left: 5px;
+        }
+        
+        /* Navigation principale */
+        .main-nav {
+          display: flex;
+        }
+        
+        .main-nav ul {
+          display: flex;
+          list-style: none;
+        }
+        
+        .main-nav ul li {
+          margin: 0 15px;
+          position: relative;
+        }
+        
+        .main-nav ul li a {
+          color: var(--text-light);
+          font-size: 1.1rem;
+          font-weight: 500;
+          padding: 8px 0;
+          position: relative;
+        }
+        
+        .main-nav ul li a:after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background-color: var(--gold-primary);
+          transition: width 0.3s ease;
+        }
+        
+        .main-nav ul li a:hover {
+          color: var(--gold-primary);
+        }
+        
+        .main-nav ul li a:hover:after {
+          width: 100%;
+        }
+        
+        .nav-cta {
+          background-color: var(--gold-primary);
+          color: var(--wood-dark) !important;
+          padding: 8px 20px !important;
+          border-radius: 4px;
+          font-weight: 600;
+        }
+        
+        .nav-cta:hover {
+          background-color: var(--gold-secondary);
+        }
+        
+        /* Page Hero */
+        .page-hero {
+          height: 50vh;
+          background: 
+            linear-gradient(var(--overlay), var(--overlay)),
+            url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 0 5%;
+          margin-top: 80px;
+        }
+        
+        .page-hero-content {
+          max-width: 800px;
+        }
+        
+        .page-hero-title {
+          font-size: 3.5rem;
+          margin-bottom: 20px;
+          text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+        
+        .page-hero-subtitle {
+          font-size: 1.5rem;
+          color: var(--gold-secondary);
+          font-weight: 300;
+        }
+        
+        /* Section Menu */
+        .menu-section {
+          padding: 80px 5%;
+          background-color: var(--wood-dark);
+        }
+        
+        .section-title {
+          text-align: center;
+          font-size: 3rem;
+          margin-bottom: 20px;
+          position: relative;
+        }
+        
+        .section-title:after {
+          content: '';
+          position: absolute;
+          width: 100px;
+          height: 3px;
+          background-color: var(--gold-primary);
+          bottom: -15px;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        
+        .section-subtitle {
+          text-align: center;
+          font-size: 1.3rem;
+          margin-bottom: 60px;
+          color: var(--gold-secondary);
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        
+        .menu-category {
+          margin-bottom: 60px;
+        }
+        
+        .category-title {
+          font-size: 2.2rem;
+          text-align: center;
+          margin-bottom: 40px;
+          color: var(--gold-primary);
+          border-bottom: 2px solid var(--gold-primary);
+          padding-bottom: 10px;
+        }
+        
+        .menu-items {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+          gap: 30px;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        
+        .menu-item {
+          background-color: var(--wood-medium);
+          border-radius: 8px;
+          padding: 25px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+          border-left: 4px solid var(--gold-primary);
+          transition: transform 0.3s ease;
+        }
+        
+        .menu-item:hover {
+          transform: translateY(-5px);
+        }
+        
+        .item-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 10px;
+        }
+        
+        .item-name {
+          font-size: 1.4rem;
+          color: var(--gold-primary);
+          font-weight: 600;
+        }
+        
+        .item-price {
+          font-size: 1.3rem;
+          color: var(--gold-secondary);
+          font-weight: 600;
+        }
+        
+        .item-description {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+        
+        .item-allergens {
+          margin-top: 10px;
+          font-size: 0.9rem;
+          color: var(--gold-secondary);
+          font-style: italic;
+        }
+        
+        /* Footer */
+        .modern-footer {
+          background-color: var(--wood-medium);
+          padding: 70px 5% 30px;
+          border-top: 2px solid var(--gold-primary);
+        }
+        
+        .footer-wrapper {
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+        
+        .footer-main {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 40px;
+          margin-bottom: 50px;
+        }
+        
+        .footer-info h3 {
+          font-size: 1.8rem;
+          margin-bottom: 20px;
+          color: var(--gold-primary);
+        }
+        
+        .footer-info p {
+          margin-bottom: 15px;
+          font-size: 1.1rem;
+        }
+        
+        .footer-hours h4, .footer-links h4 {
+          font-size: 1.3rem;
+          margin-bottom: 20px;
+          color: var(--gold-primary);
+        }
+        
+        .footer-hours ul, .footer-links ul {
+          list-style: none;
+        }
+        
+        .footer-hours li, .footer-links li {
+          margin-bottom: 10px;
+          display: flex;
+          justify-content: space-between;
+        }
+        
+        .footer-hours li span:first-child {
+          margin-right: 10px;
+        }
+        
+        .footer-links li a:hover {
+          color: var(--gold-primary);
+          padding-left: 5px;
+        }
+        
+        .footer-bottom {
+          text-align: center;
+          padding-top: 30px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-bottom p {
+          font-size: 0.9rem;
+          opacity: 0.8;
+        }
+        
+        .footer-bottom a {
+          color: var(--gold-primary);
+        }
+        
+        .footer-bottom a:hover {
+          text-decoration: underline;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+          header {
+            flex-direction: column;
+            padding: 15px 5%;
+          }
+          
+          .logo {
+            margin-bottom: 15px;
+          }
+          
+          .main-nav ul {
+            flex-wrap: wrap;
+            justify-content: center;
+          }
+          
+          .main-nav ul li {
+            margin: 5px 10px;
+          }
+          
+          .page-hero-title {
+            font-size: 2.5rem;
+          }
+          
+          .page-hero-subtitle {
+            font-size: 1.2rem;
+          }
+          
+          .section-title {
+            font-size: 2.5rem;
+          }
+          
+          .menu-items {
+            grid-template-columns: 1fr;
+          }
+          
+          .footer-main {
+            grid-template-columns: 1fr;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .page-hero-title {
+            font-size: 2rem;
+          }
+          
+          .main-nav ul li {
+            margin: 5px;
+          }
+          
+          .main-nav ul li a {
+            font-size: 1rem;
+          }
+          
+          .nav-cta {
+            padding: 6px 15px !important;
+          }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-text">ROBIGUS</div>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="carte.html" style="color: var(--gold-primary);">Notre Carte</a></li>
+                <li><a href="apropos.html">À Propos</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="reservation.html" class="nav-cta">Réserver</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1 class="page-hero-title">Notre Carte</h1>
+            <p class="page-hero-subtitle">Découvrez notre sélection de plats raffinés préparés avec passion</p>
+        </div>
+    </section>
+
+    <section class="menu-section">
+        <h2 class="section-title">Notre Menu</h2>
+        <p class="section-subtitle">Des produits frais et de saison, une cuisine créative et authentique</p>
+        
+        <div class="menu-category">
+            <h3 class="category-title">Entrées</h3>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Tartare de Saumon Bio</h4>
+                        <span class="item-price">16€</span>
+                    </div>
+                    <p class="item-description">Saumon bio, avocat, citron vert et coriandre fraîche, toast de seigle</p>
+                    <p class="item-allergens">Poisson, gluten</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Foie Gras Maison</h4>
+                        <span class="item-price">22€</span>
+                    </div>
+                    <p class="item-description">Foie gras de canard, chutney de figues et pain d'épices toasté</p>
+                    <p class="item-allergens">Gluten</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Velouté de Champignons</h4>
+                        <span class="item-price">14€</span>
+                    </div>
+                    <p class="item-description">Crème de cèpes et girolles, huile de truffe et croûtons</p>
+                    <p class="item-allergens">Lait, gluten</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3 class="category-title">Plats Principaux</h3>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Filet de Bœuf Angus</h4>
+                        <span class="item-price">34€</span>
+                    </div>
+                    <p class="item-description">Bœuf Angus, gratin dauphinois, légumes de saison et sauce au poivre vert</p>
+                    <p class="item-allergens">Lait</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Bar de Ligne Rôti</h4>
+                        <span class="item-price">28€</span>
+                    </div>
+                    <p class="item-description">Bar de ligne, légumes de saison, émulsion au citron et fenouil confit</p>
+                    <p class="item-allergens">Poisson</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Risotto aux Cèpes</h4>
+                        <span class="item-price">24€</span>
+                    </div>
+                    <p class="item-description">Risotto crémeux, cèpes frais, parmesan Reggiano et truffe noire</p>
+                    <p class="item-allergens">Lait</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-category">
+            <h3 class="category-title">Desserts</h3>
+            <div class="menu-items">
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Fondant au Chocolat</h4>
+                        <span class="item-price">12€</span>
+                    </div>
+                    <p class="item-description">Cœur coulant de chocolat noir, glace à la vanille de Madagascar</p>
+                    <p class="item-allergens">Lait, œuf, gluten</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Tarte Fine aux Pommes</h4>
+                        <span class="item-price">10€</span>
+                    </div>
+                    <p class="item-description">Pommes caramélisées, sorbet calvados et tuile aux amandes</p>
+                    <p class="item-allergens">Gluten, fruits à coque</p>
+                </div>
+                <div class="menu-item">
+                    <div class="item-header">
+                        <h4 class="item-name">Assiette de Fromages</h4>
+                        <span class="item-price">14€</span>
+                    </div>
+                    <p class="item-description">Sélection de fromages affinés, confiture de figues et noix</p>
+                    <p class="item-allergens">Lait, fruits à coque</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="modern-footer">
+        <div class="footer-wrapper">
+            <div class="footer-main">
+                <div class="footer-info">
+                    <h3>Restaurant Robigus</h3>
+                    <p>Une expérience culinaire exceptionnelle au cœur de Paris, où la tradition rencontre l'innovation.</p>
+                    <p>123 Avenue Gastronomique<br>75001 Paris, France</p>
+                    <p>+33 1 42 86 95 42</p>
+                </div>
+                <div class="footer-hours">
+                    <h4>Horaires d'Ouverture</h4>
+                    <ul>
+                        <li><span>Lundi - Samedi:</span> <span>10h - 22h</span></li>
+                        <li><span>Dimanche:</span> <span>Fermé</span></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Liens Rapides</h4>
+                    <ul>
+                        <li><a href="index.html">Accueil</a></li>
+                        <li><a href="carte.html">Notre Carte</a></li>
+                        <li><a href="apropos.html">À Propos</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="reservation.html">Réservation</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Restaurant Robigus. Tous droits réservés. | <a href="#">Mentions légales</a> | <a href="#">Politique de confidentialité</a></p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
