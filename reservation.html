@@ -177,6 +177,12 @@
             transform: translateY(-2px);
         }
 
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .reservation-info {
             background: white;
             padding: var(--spacing-xl);
@@ -252,6 +258,26 @@
             margin-bottom: var(--spacing-lg);
         }
 
+        .availability-message {
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .available {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .unavailable {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Footer */
         footer {
             background-color: var(--primary-color);
@@ -325,6 +351,8 @@
             <div class="reservation-container">
                 <div class="reservation-form">
                     <form id="reservationForm">
+                        <div id="availabilityMessage" class="availability-message" style="display: none;"></div>
+                        
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="firstName"><i class="fas fa-user"></i> Prénom</label>
@@ -403,7 +431,7 @@
                             <textarea id="specialRequests" name="specialRequests" placeholder="Allergies, préférences alimentaires, ou autres demandes..."></textarea>
                         </div>
 
-                        <button type="submit" class="btn">
+                        <button type="submit" class="btn" id="submitBtn">
                             <i class="fas fa-check-circle"></i> Confirmer la Réservation
                         </button>
                     </form>
@@ -430,7 +458,7 @@
                     <div class="info-card">
                         <h3><i class="fas fa-phone info-icon"></i> Contact Direct</h3>
                         <p>Pour les réservations de dernière minute ou les groupes de plus de 8 personnes, contactez-nous directement :<br>
-                           <strong>📞 +33 1 42 86 95 42</strong></p>
+                           <strong>📞 +33 06 59 24 88 37</strong></p>
                     </div>
 
                     <div class="features-grid">
@@ -486,7 +514,7 @@
                 </div>
                 <div class="footer-section">
                     <h3>Contact</h3>
-                    <p>123 Avenue Gastronomique<br>75001 Paris<br>+33 1 42 86 95 42</p>
+                    <p>123 Avenue Gastronomique<br>75001 Paris<br>+33 06 59 24 88 37</p>
                 </div>
                 <div class="footer-section">
                     <h3>Horaires</h3>
@@ -498,48 +526,177 @@
     </footer>
 
     <script>
+        // Stockage des réservations dans le localStorage
+        class ReservationManager {
+            constructor() {
+                this.reservations = this.getStoredReservations();
+            }
+
+            getStoredReservations() {
+                const stored = localStorage.getItem('robigus_reservations');
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            saveReservations() {
+                localStorage.setItem('robigus_reservations', JSON.stringify(this.reservations));
+            }
+
+            addReservation(reservationData) {
+                const reservation = {
+                    id: Date.now().toString(),
+                    ...reservationData,
+                    status: 'confirmée',
+                    createdAt: new Date().toISOString()
+                };
+                
+                this.reservations.push(reservation);
+                this.saveReservations();
+                return reservation;
+            }
+
+            checkAvailability(date, time, guests) {
+                const MAX_CAPACITY = 50;
+                const reservationsForSlot = this.reservations.filter(res => 
+                    res.date === date && 
+                    res.time === time && 
+                    res.status === 'confirmée'
+                );
+
+                const totalGuests = reservationsForSlot.reduce((sum, res) => sum + parseInt(res.guests), 0);
+                const available = (totalGuests + parseInt(guests)) <= MAX_CAPACITY;
+                
+                return {
+                    available,
+                    totalGuests,
+                    remainingCapacity: MAX_CAPACITY - totalGuests
+                };
+            }
+
+            getReservations() {
+                return this.reservations;
+            }
+        }
+
+        // Initialisation du gestionnaire de réservations
+        const reservationManager = new ReservationManager();
+
         // Gestion du formulaire de réservation
         document.getElementById('reservationForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
             // Récupération des valeurs du formulaire
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const date = document.getElementById('date').value;
-            const time = document.getElementById('time').value;
-            const guests = document.getElementById('guests').value;
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value,
+                guests: document.getElementById('guests').value,
+                occasion: document.getElementById('occasion').value,
+                specialRequests: document.getElementById('specialRequests').value
+            };
+
+            // Vérification finale de la disponibilité
+            const availability = reservationManager.checkAvailability(formData.date, formData.time, formData.guests);
             
-            // Formatage de la date
-            const dateObj = new Date(date);
-            const formattedDate = dateObj.toLocaleDateString('fr-FR', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            // Message de confirmation personnalisé
-            const message = `Merci ${firstName} ${lastName} ! Votre réservation pour ${guests} personne(s) le ${formattedDate} à ${time} a été confirmée. Vous recevrez un email de confirmation sous peu.`;
-            
-            document.getElementById('confirmationMessage').textContent = message;
-            document.getElementById('confirmationModal').style.display = 'flex';
-            
-            // Réinitialisation du formulaire
-            this.reset();
+            if (!availability.available) {
+                alert('Désolé, plus de places disponibles pour cette date et heure. Veuillez choisir un autre créneau.');
+                return;
+            }
+
+            try {
+                // Ajout de la réservation
+                const reservation = reservationManager.addReservation(formData);
+                
+                // Succès
+                const dateObj = new Date(formData.date);
+                const formattedDate = dateObj.toLocaleDateString('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const message = `Merci ${formData.firstName} ${formData.lastName} ! Votre réservation pour ${formData.guests} personne(s) le ${formattedDate} à ${formData.time} a été confirmée. Numéro de réservation: ${reservation.id}`;
+                
+                document.getElementById('confirmationMessage').textContent = message;
+                document.getElementById('confirmationModal').style.display = 'flex';
+                
+                // Réinitialisation du formulaire
+                this.reset();
+                hideAvailabilityMessage();
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Une erreur est survenue lors de la réservation.');
+            }
         });
 
         function closeModal() {
             document.getElementById('confirmationModal').style.display = 'none';
         }
 
-        // Configuration de la date minimale (aujourd'hui)
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('date').min = today;
+        // Configuration des dates
+        function setupDateConstraints() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').min = today;
 
-        // Configuration de la date maximale (3 mois)
-        const maxDate = new Date();
-        maxDate.setMonth(maxDate.getMonth() + 3);
-        document.getElementById('date').max = maxDate.toISOString().split('T')[0];
+            const maxDate = new Date();
+            maxDate.setMonth(maxDate.getMonth() + 3);
+            document.getElementById('date').max = maxDate.toISOString().split('T')[0];
+        }
+
+        // Gestion de la disponibilité
+        function showAvailabilityMessage(message, isAvailable) {
+            const messageEl = document.getElementById('availabilityMessage');
+            messageEl.textContent = message;
+            messageEl.className = `availability-message ${isAvailable ? 'available' : 'unavailable'}`;
+            messageEl.style.display = 'block';
+        }
+
+        function hideAvailabilityMessage() {
+            document.getElementById('availabilityMessage').style.display = 'none';
+        }
+
+        function updateSubmitButton(available) {
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = !available;
+            submitBtn.innerHTML = available ? 
+                '<i class="fas fa-check-circle"></i> Confirmer la Réservation' :
+                '<i class="fas fa-times-circle"></i> Créneau Indisponible';
+        }
+
+        function checkAvailability() {
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const guests = document.getElementById('guests').value;
+
+            if (date && time && guests) {
+                const availability = reservationManager.checkAvailability(date, time, guests);
+                
+                if (availability.available) {
+                    showAvailabilityMessage(
+                        `✅ Places disponibles ! Capacité restante: ${availability.remainingCapacity} personne(s)`,
+                        true
+                    );
+                } else {
+                    showAvailabilityMessage(
+                        `❌ Complet ! ${availability.totalGuests}/50 personnes déjà réservées pour ce créneau`,
+                        false
+                    );
+                }
+                updateSubmitButton(availability.available);
+            } else {
+                hideAvailabilityMessage();
+                updateSubmitButton(true);
+            }
+        }
+
+        // Événements
+        document.getElementById('date').addEventListener('change', checkAvailability);
+        document.getElementById('time').addEventListener('change', checkAvailability);
+        document.getElementById('guests').addEventListener('change', checkAvailability);
 
         // Fermer la modal en cliquant à l'extérieur
         window.onclick = function(event) {
@@ -548,6 +705,15 @@
                 closeModal();
             }
         }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDateConstraints();
+            updateSubmitButton(true);
+            
+            // Afficher le nombre total de réservations (pour debug)
+            console.log('Réservations stockées:', reservationManager.getReservations().length);
+        });
     </script>
 </body>
 </html>
