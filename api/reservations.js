@@ -21,9 +21,9 @@ export default async function handler(req, res) {
   // GET - Récupérer toutes les réservations
   if (req.method === 'GET') {
     try {
-      // Récupérer les réservations depuis Supabase avec les bons noms de colonnes
+      // Récupérer les réservations depuis Supabase avec le bon nom de table
       const { data, error } = await supabase
-        .from('reservations')
+        .from('reservation')  // Changé : 'reservations' → 'reservation'
         .select('*')
         .order('reservation_date', { ascending: true })
         .order('reservation_time', { ascending: true });
@@ -37,12 +37,12 @@ export default async function handler(req, res) {
         lastName: reservation.last_name,
         email: reservation.email,
         phone: reservation.phone,
-        date: reservation.reservation_date,  // Changé ici
-        time: reservation.reservation_time,  // Changé ici
-        guests: reservation.guests_count,    // Changé ici
+        date: reservation.reservation_date,
+        time: reservation.reservation_time,
+        guests: reservation.guests_count,
         occasion: reservation.occasion,
         specialRequests: reservation.special_requests,
-        status: reservation.status || 'confirmée',  // Votre valeur par défaut
+        status: reservation.status || 'confirmée',
         createdAt: reservation.created_at
       }));
 
@@ -72,21 +72,21 @@ export default async function handler(req, res) {
         specialRequests
       } = req.body;
 
-      // Insérer dans Supabase avec les bons noms de colonnes
+      // Insérer dans Supabase avec le bon nom de table
       const { data, error } = await supabase
-        .from('reservations')
+        .from('reservation')  // Changé : 'reservations' → 'reservation'
         .insert([
           {
             first_name: firstName,
             last_name: lastName,
             email: email,
             phone: phone,
-            reservation_date: date,        // Changé ici
-            reservation_time: time,        // Changé ici
-            guests_count: parseInt(guests), // Changé ici
+            reservation_date: date,
+            reservation_time: time,
+            guests_count: parseInt(guests),
             occasion: occasion || null,
             special_requests: specialRequests || null,
-            status: 'confirmée'            // Votre valeur par défaut
+            status: 'confirmée'
           }
         ])
         .select();
@@ -128,17 +128,17 @@ export default async function handler(req, res) {
         status
       } = req.body;
 
-      // Mettre à jour dans Supabase avec les bons noms de colonnes
+      // Mettre à jour dans Supabase avec le bon nom de table
       const { data, error } = await supabase
-        .from('reservations')
+        .from('reservation')  // Changé : 'reservations' → 'reservation'
         .update({
           first_name: firstName,
           last_name: lastName,
           email: email,
           phone: phone,
-          reservation_date: date,          // Changé ici
-          reservation_time: time,          // Changé ici
-          guests_count: parseInt(guests),   // Changé ici
+          reservation_date: date,
+          reservation_time: time,
+          guests_count: parseInt(guests),
           occasion: occasion,
           special_requests: specialRequests,
           status: status
@@ -169,9 +169,9 @@ export default async function handler(req, res) {
     try {
       const { id } = req.query;
 
-      // Supprimer la réservation dans Supabase
+      // Supprimer la réservation dans Supabase avec le bon nom de table
       const { error } = await supabase
-        .from('reservations')
+        .from('reservation')  // Changé : 'reservations' → 'reservation'
         .delete()
         .eq('id', id);
 
