@@ -1,30 +1,60 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js'
 
-// Debug: Vérifiez que les variables d'environnement sont chargées
-console.log('🔧 Configuration Supabase:');
-console.log('URL:', process.env.SUPABASE_URL ? '✓ Définie' : '✗ Manquante');
-console.log('KEY:', process.env.SUPABASE_ANON_KEY ? '✓ Définie' : '✗ Manquante');
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.error('❌ Variables d\'environnement Supabase manquantes!');
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Initialiser Supabase
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
 
 export default async function handler(req, res) {
-  // CORS headers
+  // Configurer CORS
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
+  // GET - Récupérer toutes les réservations
+  if (req.method === 'GET') {
+    try {
+      // Récupérer les réservations depuis Supabase
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .order('date', { ascending: true })
+        .order('time', { ascending: true });
+
+      if (error) throw error;
+
+      // Formater les données pour l'administration
+      const formattedData = data.map(reservation => ({
+        id: reservation.id,
+        firstName: reservation.first_name,
+        lastName: reservation.last_name,
+        email: reservation.email,
+        phone: reservation.phone,
+        date: reservation.date,
+        time: reservation.time,
+        guests: reservation.guests,
+        occasion: reservation.occasion,
+        specialRequests: reservation.special_requests,
+        status: reservation.status || 'pending',
+        createdAt: reservation.created_at
+      }));
+
+      res.status(200).json(formattedData);
+    } catch (error) {
+      console.error('Erreur récupération réservations:', error);
+      res.status(500).json({ message: 'Erreur lors de la récupération des réservations' });
+    }
+    return;
+  }
+
+  // POST - Créer une nouvelle réservation
   if (req.method === 'POST') {
     try {
       const {
@@ -39,130 +69,124 @@ export default async function handler(req, res) {
         specialRequests
       } = req.body;
 
-      console.log('📥 DONNÉES REÇUES:', {
-        firstName, lastName, email, phone, date, time, guests, occasion, specialRequests
-      });
-
-      // Validation des données
-      if (!firstName || !lastName || !email || !phone || !date || !time || !guests) {
-        return res.status(400).json({
-          success: false,
-          message: 'Tous les champs requis ne sont pas remplis'
-        });
-      }
-
-      // VÉRIFICATION SUPABASE - Test de connexion
-      console.log('🔍 Test de connexion à Supabase...');
-      const { data: testData, error: testError } = await supabase
-        .from('reservation')
-        .select('id')
-        .limit(1);
-
-      if (testError) {
-        console.error('❌ ERREUR CONNEXION SUPABASE:', testError);
-        return res.status(500).json({
-          success: false,
-          message: 'Erreur de connexion à la base de données: ' + testError.message
-        });
-      }
-
-      console.log('✅ Connexion Supabase réussie');
-
-      // Vérification de la disponibilité
-      console.log('🔍 Vérification disponibilité pour:', date, time);
-      const { data: existingReservations, error: availabilityError } = await supabase
-        .from('reservation')
-        .select('guests_count')
-        .eq('reservation_date', date)
-        .eq('reservation_time', time)
-        .eq('status', 'confirmée');
-
-      if (availabilityError) {
-        console.error('❌ Erreur disponibilité:', availabilityError);
-        return res.status(500).json({
-          success: false,
-          message: 'Erreur de vérification de disponibilité'
-        });
-      }
-
-      const MAX_CAPACITY = 50;
-      const totalGuests = existingReservations ? existingReservations.reduce((sum, res) => sum + res.guests_count, 0) : 0;
-      const available = (totalGuests + parseInt(guests)) <= MAX_CAPACITY;
-
-      console.log('📊 Statistiques:', {
-        réservationsExistantes: existingReservations?.length || 0,
-        totalGuests,
-        nouveauxGuests: guests,
-        disponible: available
-      });
-
-      if (!available) {
-        return res.status(400).json({
-          success: false,
-          message: 'Désolé, plus de places disponibles pour cette date et heure.'
-        });
-      }
-
-      // INSERTION DANS SUPABASE
-      console.log('💾 Insertion dans Supabase...');
-      const reservationData = {
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        phone: phone,
-        reservation_date: date,
-        reservation_time: time,
-        guests_count: parseInt(guests),
-        occasion: occasion || null,
-        special_requests: specialRequests || null,
-        status: 'confirmée'
-      };
-
-      console.log('📤 Données à insérer:', reservationData);
-
+      // Insérer dans Supabase
       const { data, error } = await supabase
-        .from('reservation')
-        .insert([reservationData])
+        .from('reservations')
+        .insert([
+          {
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: phone,
+            date: date,
+            time: time,
+            guests: parseInt(guests),
+            occasion: occasion,
+            special_requests: specialRequests,
+            status: 'pending'
+          }
+        ])
         .select();
 
-      if (error) {
-        console.error('❌ ERREUR INSERTION SUPABASE:', error);
-        return res.status(500).json({
-          success: false,
-          message: 'Erreur lors de la sauvegarde: ' + error.message
-        });
-      }
-
-      if (!data || data.length === 0) {
-        console.error('❌ Aucune donnée retournée après insertion');
-        return res.status(500).json({
-          success: false,
-          message: 'Erreur: aucune donnée retournée après insertion'
-        });
-      }
+      if (error) throw error;
 
       const reservationId = data[0].id;
-      console.log('✅ RÉSERVATION RÉUSSIE! ID:', reservationId);
 
-      // RÉPONSE DE SUCCÈS
-      res.status(200).json({
-        success: true,
-        reservationId: reservationId, // VRAI ID DE LA BDD
-        message: 'Réservation confirmée avec succès'
+      res.status(200).json({ 
+        success: true, 
+        reservationId: reservationId,
+        message: 'Réservation confirmée avec succès' 
       });
 
     } catch (error) {
-      console.error('❌ ERREUR GÉNÉRALE:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Erreur serveur: ' + error.message
+      console.error('Erreur réservation:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la réservation' 
       });
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).json({
-      success: false,
-      message: `Méthode ${req.method} non autorisée`
-    });
+    return;
   }
+
+  // PUT - Modifier une réservation
+  if (req.method === 'PUT') {
+    try {
+      const { id } = req.query;
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        date,
+        time,
+        guests,
+        occasion,
+        specialRequests,
+        status
+      } = req.body;
+
+      // Mettre à jour dans Supabase
+      const { data, error } = await supabase
+        .from('reservations')
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          phone: phone,
+          date: date,
+          time: time,
+          guests: parseInt(guests),
+          occasion: occasion,
+          special_requests: specialRequests,
+          status: status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select();
+
+      if (error) throw error;
+
+      res.status(200).json({ 
+        success: true, 
+        message: 'Réservation modifiée avec succès',
+        reservation: data[0]
+      });
+
+    } catch (error) {
+      console.error('Erreur modification réservation:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la modification de la réservation' 
+      });
+    }
+    return;
+  }
+
+  // DELETE - Supprimer une réservation
+  if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+
+      // Supprimer la réservation dans Supabase
+      const { error } = await supabase
+        .from('reservations')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      res.status(200).json({ 
+        success: true,
+        message: 'Réservation supprimée avec succès' 
+      });
+    } catch (error) {
+      console.error('Erreur suppression réservation:', error);
+      res.status(500).json({ 
+        message: 'Erreur lors de la suppression de la réservation' 
+      });
+    }
+    return;
+  }
+
+  // Méthode non autorisée
+  res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
+  res.status(405).end(`Method ${req.method} Not Allowed`);
 }
