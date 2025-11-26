@@ -21,35 +21,38 @@ export default async function handler(req, res) {
   // GET - Récupérer toutes les réservations
   if (req.method === 'GET') {
     try {
-      // Récupérer les réservations depuis Supabase
+      // Récupérer les réservations depuis Supabase avec les bons noms de colonnes
       const { data, error } = await supabase
         .from('reservations')
         .select('*')
-        .order('date', { ascending: true })
-        .order('time', { ascending: true });
+        .order('reservation_date', { ascending: true })
+        .order('reservation_time', { ascending: true });
 
       if (error) throw error;
 
-      // Formater les données pour l'administration
+      // Formater les données pour correspondre aux noms de colonnes de votre base
       const formattedData = data.map(reservation => ({
         id: reservation.id,
         firstName: reservation.first_name,
         lastName: reservation.last_name,
         email: reservation.email,
         phone: reservation.phone,
-        date: reservation.date,
-        time: reservation.time,
-        guests: reservation.guests,
+        date: reservation.reservation_date,  // Changé ici
+        time: reservation.reservation_time,  // Changé ici
+        guests: reservation.guests_count,    // Changé ici
         occasion: reservation.occasion,
         specialRequests: reservation.special_requests,
-        status: reservation.status || 'pending',
+        status: reservation.status || 'confirmée',  // Votre valeur par défaut
         createdAt: reservation.created_at
       }));
 
       res.status(200).json(formattedData);
     } catch (error) {
       console.error('Erreur récupération réservations:', error);
-      res.status(500).json({ message: 'Erreur lors de la récupération des réservations' });
+      res.status(500).json({ 
+        message: 'Erreur lors de la récupération des réservations',
+        error: error.message 
+      });
     }
     return;
   }
@@ -69,7 +72,7 @@ export default async function handler(req, res) {
         specialRequests
       } = req.body;
 
-      // Insérer dans Supabase
+      // Insérer dans Supabase avec les bons noms de colonnes
       const { data, error } = await supabase
         .from('reservations')
         .insert([
@@ -78,12 +81,12 @@ export default async function handler(req, res) {
             last_name: lastName,
             email: email,
             phone: phone,
-            date: date,
-            time: time,
-            guests: parseInt(guests),
-            occasion: occasion,
-            special_requests: specialRequests,
-            status: 'pending'
+            reservation_date: date,        // Changé ici
+            reservation_time: time,        // Changé ici
+            guests_count: parseInt(guests), // Changé ici
+            occasion: occasion || null,
+            special_requests: specialRequests || null,
+            status: 'confirmée'            // Votre valeur par défaut
           }
         ])
         .select();
@@ -101,7 +104,8 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Erreur réservation:', error);
       res.status(500).json({ 
-        message: 'Erreur lors de la réservation' 
+        message: 'Erreur lors de la réservation',
+        error: error.message 
       });
     }
     return;
@@ -124,7 +128,7 @@ export default async function handler(req, res) {
         status
       } = req.body;
 
-      // Mettre à jour dans Supabase
+      // Mettre à jour dans Supabase avec les bons noms de colonnes
       const { data, error } = await supabase
         .from('reservations')
         .update({
@@ -132,13 +136,12 @@ export default async function handler(req, res) {
           last_name: lastName,
           email: email,
           phone: phone,
-          date: date,
-          time: time,
-          guests: parseInt(guests),
+          reservation_date: date,          // Changé ici
+          reservation_time: time,          // Changé ici
+          guests_count: parseInt(guests),   // Changé ici
           occasion: occasion,
           special_requests: specialRequests,
-          status: status,
-          updated_at: new Date().toISOString()
+          status: status
         })
         .eq('id', id)
         .select();
@@ -154,7 +157,8 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Erreur modification réservation:', error);
       res.status(500).json({ 
-        message: 'Erreur lors de la modification de la réservation' 
+        message: 'Erreur lors de la modification de la réservation',
+        error: error.message 
       });
     }
     return;
@@ -180,7 +184,8 @@ export default async function handler(req, res) {
     } catch (error) {
       console.error('Erreur suppression réservation:', error);
       res.status(500).json({ 
-        message: 'Erreur lors de la suppression de la réservation' 
+        message: 'Erreur lors de la suppression de la réservation',
+        error: error.message 
       });
     }
     return;
