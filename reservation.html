@@ -505,25 +505,69 @@
         </div>
     </div>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Restaurant Robigus</h3>
-                    <p>Une expérience culinaire exceptionnelle au cœur de Paris</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>123 Avenue Gastronomique<br>75001 Paris<br>+33 06 59 24 88 37</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Horaires</h3>
-                    <p>Lundi - Samedi<br>12h00 - 14h30 & 19h00 - 23h00</p>
-                </div>
+
+    <footer class="modern-footer">
+    <div class="footer-wrapper">
+        <div class="footer-main">
+            <div class="footer-info">
+                <h3>Robigus Restaurant</h3>
+                <p>46 RUE DE VILLEPARISIS <br>77290 MITRY-MORY</p>
+                <p>Tél: 06 59 24 88 37<br>Email: contact@robigus-restaurant.fr</p>
             </div>
-            <p>&copy; 2026 Restaurant Robigus. Tous droits réservés.</p>
+            <div class="footer-hours">
+                <h4>Horaires</h4>
+                <ul>
+                    <li><span>Mardi - Jeudi</span> <span>12h-14h30 • 19h-22h30</span></li>
+                    <li><span>Vendredi - Samedi</span> <span>12h-14h30 • 19h-23h</span></li>
+                    <li><span>Dimanche</span> <span>12h-15h</span></li>
+                    <li><span>Lundi</span> <span>Fermé</span></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Liens utiles</h4>
+                <ul>
+                    <li><a href="carte.html">Notre Carte</a></li>
+                    <li><a href="apropos.html">À Propos</a></li>
+                    <li><a href="reservation.html">Réservation</a></li>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                </ul>
+            </div>
         </div>
-    </footer>
+        <div class="footer-bottom">
+            <p>© 2026 Robigus Restaurant | Tous droits réservés — Hébergé via GitHub + Vercel | Base de données Supabase</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts légers pour navigation fluide et Vercel Analytics -->
+<script>
+    // Navigation fluide pour ancres internes si besoin
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if(targetId !== "#" && targetId !== "#top" && targetId !== "") {
+                const targetElem = document.querySelector(targetId);
+                if(targetElem) {
+                    e.preventDefault();
+                    targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    });
+
+    // Script Vercel Analytics (identique à la charte technique)
+    (function() {
+        const t = document.createElement('script');
+        t.src = 'https://vitals.vercel-insights.com/v1/script.js?' + Date.now();
+        t.dataset.vercelDsn = 'https://vitals.vercel-insights.com/v1/vitals';
+        t.dataset.vercelOrigin = window.location.origin;
+        t.crossOrigin = 'anonymous';
+        t.defer = true;
+        document.body.appendChild(t);
+    })();
+
+    
+</script>
 
 
 <script>
