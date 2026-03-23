@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Robigus Restaurant - Mentions légales</title>
+
+    <!-- Typographies élégantes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== VARIABLES ===== */
+        :root {
+            --wood-dark: #3e2723;
+            --wood-medium: #5d4037;
+            --wood-light: #8d6e63;
+            --gold-primary: #d4af37;
+            --gold-secondary: #f7ef8a;
+            --text-light: #f5f5f5;
+            --text-dark: #212121;
+            --overlay: rgba(0, 0, 0, 0.6);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--text-light);
+            background-color: var(--wood-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--gold-primary);
+            letter-spacing: 1px;
+        }
+        
+        a {
+            text-decoration: none;
+            color: var(--gold-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        a:hover {
+            color: var(--gold-primary);
+            text-decoration: underline;
+        }
+        
+        /* HEADER (identique à la page principale) */
+        header {
+            background-color: var(--wood-medium);
+            padding: 15px 5%;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid var(--gold-primary);
+        }
+        
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--gold-primary);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        .logo-accent {
+            color: var(--gold-secondary);
+            font-size: 1.2rem;
+            margin-left: 5px;
+        }
+        
+        .main-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        .main-nav ul li a {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 8px 0;
+            position: relative;
+        }
+        
+        .main-nav ul li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: var(--gold-primary);
+            transition: width 0.3s ease;
+        }
+        
+        .main-nav ul li a:hover {
+            color: var(--gold-primary);
+        }
+        
+        .main-nav ul li a:hover:after {
+            width: 100%;
+        }
+        
+        .nav-cta {
+            background-color: var(--gold-primary);
+            color: var(--wood-dark) !important;
+            padding: 8px 20px !important;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .nav-cta:hover {
+            background-color: var(--gold-secondary);
+        }
+        
+        /* Conteneur principal Mentions Légales */
+        .legal-container {
+            max-width: 1200px;
+            margin: 140px auto 80px;
+            padding: 0 5%;
+        }
+        
+        /* En-tête de la page */
+        .legal-header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+        
+        .legal-header h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .legal-header .separator {
+            width: 120px;
+            height: 3px;
+            background: var(--gold-primary);
+            margin: 20px auto;
+        }
+        
+        .legal-header p {
+            font-size: 1.2rem;
+            color: var(--gold-secondary);
+            font-style: italic;
+        }
+        
+        /* Grille d'articles légaux */
+        .legal-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .legal-card {
+            background: rgba(93, 64, 55, 0.6);
+            backdrop-filter: blur(2px);
+            border-left: 4px solid var(--gold-primary);
+            border-radius: 12px;
+            padding: 30px 35px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .legal-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .legal-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .legal-card h2 .emoji {
+            font-size: 1.8rem;
+        }
+        
+        .legal-card p, .legal-card li {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 12px;
+            color: rgba(255, 245, 240, 0.95);
+        }
+        
+        .legal-card ul, .legal-card ol {
+            padding-left: 1.8rem;
+            margin: 15px 0;
+        }
+        
+        .legal-card li {
+            margin-bottom: 8px;
+        }
+        
+        .legal-card strong {
+            color: var(--gold-primary);
+            font-weight: 600;
+        }
+        
+        .badge-tech {
+            background: var(--wood-dark);
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            color: var(--gold-secondary);
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(212, 175, 55, 0.4);
+        }
+        
+        .signature-block {
+            margin-top: 50px;
+            padding: 25px;
+            text-align: center;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            font-size: 0.95rem;
+        }
+        
+        /* FOOTER (identique au design original) */
+        .modern-footer {
+            background-color: var(--wood-medium);
+            padding: 70px 5% 30px;
+            border-top: 2px solid var(--gold-primary);
+            margin-top: 40px;
+        }
+        
+        .footer-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer-main {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .footer-info h3, .footer-hours h4, .footer-links h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--gold-primary);
+        }
+        
+        .footer-info p, .footer-hours li, .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-hours ul, .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-hours li {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .footer-links li a:hover {
+            color: var(--gold-primary);
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 12px 5%;
+            }
+            .logo-text {
+                font-size: 1.4rem;
+            }
+            .main-nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 12px;
+                margin-top: 8px;
+            }
+            .legal-container {
+                margin-top: 180px;
+            }
+            .legal-card {
+                padding: 20px;
+            }
+            .legal-header h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .legal-card h2 {
+                font-size: 1.4rem;
+            }
+            .legal-card p, .legal-card li {
+                font-size: 0.95rem;
+            }
+        }
+        
+        /* Animation subtile au chargement */
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .legal-card {
+            animation: fadeSlide 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .legal-card:nth-child(1) { animation-delay: 0.1s; }
+        .legal-card:nth-child(2) { animation-delay: 0.2s; }
+        .legal-card:nth-child(3) { animation-delay: 0.3s; }
+        .legal-card:nth-child(4) { animation-delay: 0.4s; }
+        .legal-card:nth-child(5) { animation-delay: 0.5s; }
+        .legal-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-text">ROBIGUS<span class="logo-accent">★</span></div>
+    </div>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="carte.html">Notre Carte</a></li>
+            <li><a href="apropos.html">À Propos</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="reservation.html" class="nav-cta">Réserver</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="legal-container">
+    <div class="legal-header">
+        <h1>MENTIONS LÉGALES</h1>
+        <div class="separator"></div>
+        <p>Conformité RGPD & informations éditeur — Version mise à jour le 23 mars 2026</p>
+    </div>
+
+    <div class="legal-grid">
+        <!-- 1. ÉDITEUR DU SITE -->
+        <div class="legal-card">
+            <h2><span class="emoji">🍽️</span> 1. Éditeur du site</h2>
+            <p><strong>Restaurant Robigus</strong> — SARL au capital de 50 000 €</p>
+            <p>Siège social : 46 Rue de Villeparisis, 77290 Mitry-Mory, France</p>
+            <p>Immatriculation RCS Meaux : 824 911 237 00017 · TVA intracommunautaire : FR 82 824911237</p>
+            <p><strong>Directeur de la publication :</strong> Arnaud Delacroix, gérant</p>
+            <p><strong>Contact :</strong> contact@robigus-restaurant.fr | Tél : 06 59 24 88 37</p>
+            <p>L’accès et l’utilisation du site www.robigus-restaurant.fr sont soumis aux présentes mentions légales. L’éditeur s’efforce d’assurer l’exactitude des informations diffusées, sans garantie de exhaustivité.</p>
+        </div>
+
+        <!-- 2. HÉBERGEMENT & INFRASTRUCTURE TECHNIQUE (GitHub, Supabase, Vercel) -->
+        <div class="legal-card">
+            <h2><span class="emoji">☁️</span> 2. Hébergement & infrastructures techniques</h2>
+            <p>Le site internet de Robigus Restaurant est hébergé et déployé grâce à une architecture moderne combinant plusieurs services :</p>
+            <ul>
+                <li><strong>Hébergement du code source (front-end) :</strong> <span class="badge-tech">GitHub</span> — GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis. Les fichiers statiques et le versioning sont gérés via les dépôts privés GitHub.</li>
+                <li><strong>Base de données et gestion des réservations :</strong> <span class="badge-tech">Supabase</span> — Supabase, Inc., 970 Toorak Rd, Camberwell VIC 3124, Australie. Toutes les données relatives aux réservations, formulaires de contact et préférences utilisateur sont stockées sur des serveurs sécurisés Supabase (PostgreSQL) situés dans la région Europe (Frankfurt). Conformité RGPD garantie par contrat de sous-traitance.</li>
+                <li><strong>Plateforme de déploiement continu et hébergement final :</strong> <span class="badge-tech">Vercel</span> — Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis. Le site est déployé automatiquement depuis GitHub vers Vercel, bénéficiant d’un CDN mondial et de certificats SSL/TLS renforcés.</li>
+            </ul>
+            <p>L’ensemble de l’infrastructure respecte les normes européennes de protection des données. Les transferts de données hors UE sont encadrés par les clauses contractuelles types (CCT).</p>
+        </div>
+
+        <!-- 3. PROTECTION DES DONNÉES PERSONNELLES (RGPD + SUPABASE) -->
+        <div class="legal-card">
+            <h2><span class="emoji">🔒</span> 3. Données personnelles & RGPD</h2>
+            <p>Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, Robigus Restaurant collecte vos données via :</p>
+            <ul>
+                <li>Formulaire de réservation en ligne (nom, prénom, téléphone, email, nombre de couverts, date/heure).</li>
+                <li>Formulaire de contact (demande d’informations).</li>
+                <li>Newsletter (uniquement avec consentement explicite).</li>
+            </ul>
+            <p><strong>Finalité :</strong> gestion des réservations, relation client, statistiques internes et amélioration du service. Les données sont hébergées sur <strong>Supabase</strong> (serveurs Europe) et ne sont jamais cédées à des tiers à des fins commerciales.</p>
+            <p><strong>Durée de conservation :</strong> 13 mois pour les données de réservation, 3 ans pour les prospects non clients (sauf opposition).</p>
+            <p><strong>Vos droits :</strong> accès, rectification, effacement, limitation, portabilité. Pour les exercer, écrivez à : <a href="mailto:dpo@robigus-restaurant.fr">dpo@robigus-restaurant.fr</a> ou par courrier à l’adresse du siège.</p>
+            <p>En cas de litige, vous pouvez saisir la CNIL : <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>.</p>
+        </div>
+
+        <!-- 4. COOKIES & ANALYTICS (Vercel Analytics) -->
+        <div class="legal-card">
+            <h2><span class="emoji">🍪</span> 4. Gestion des cookies & mesures d’audience</h2>
+            <p>Ce site utilise des cookies strictement nécessaires au fonctionnement de l’interface de réservation. Aucun cookie publicitaire n’est déposé.</p>
+            <p>Nous utilisons <strong>Vercel Analytics</strong> (solution propriétaire intégrée au déploiement) pour mesurer les visites anonymes, le taux de rebond et les performances techniques. Les données sont agrégées et ne permettent pas d’identifier les utilisateurs individuellement. Aucun partage avec des régies publicitaires.</p>
+            <p>Vous pouvez paramétrer vos préférences cookies via le bandeau de consentement affiché lors de votre première visite. Le blocage des cookies peut altérer certaines fonctionnalités dynamiques (réservation instantanée).</p>
+            <p><strong>Durée de vie des cookies :</strong> 12 mois maximum pour les préférences de consentement.</p>
+        </div>
+
+        <!-- 5. PROPRIÉTÉ INTELLECTUELLE & CRÉDITS -->
+        <div class="legal-card">
+            <h2><span class="emoji">©️</span> 5. Propriété intellectuelle</h2>
+            <p>L’intégralité du contenu du site (textes, graphismes, photographies, vidéos, logo Robigus, icônes, architecture web) est la propriété exclusive de la SARL Robigus Restaurant, sauf mentions contraires. Toute reproduction, représentation, modification ou diffusion sans autorisation écrite préalable est interdite et constitue une contrefaçon.</p>
+            <p><strong>Crédits photographiques :</strong> Unsplash (licences libres), archives personnelles du chef Delacroix, images issues de la banque d’image propriétaire Robigus.</p>
+            <p><strong>Crédits techniques :</strong> Développement & intégration : Agence Robigus Digital. Intégration continue via GitHub Actions, déploiement Vercel, gestion BDD Supabase.</p>
+        </div>
+
+        <!-- 6. RESPONSABILITÉ & LIENS EXTERNES -->
+        <div class="legal-card">
+            <h2><span class="emoji">⚖️</span> 6. Responsabilité & liens hypertextes</h2>
+            <p>Robigus Restaurant met tout en œuvre pour fournir des informations exactes et actualisées. Toutefois, des erreurs ou omissions peuvent subsister. L’utilisateur est seul responsable de l’usage des informations du site.</p>
+            <p>Le site peut contenir des liens vers des sites partenaires (tourisme local, producteurs). Nous n’exerçons aucun contrôle sur ces ressources externes et déclinons toute responsabilité quant à leur contenu, leurs pratiques RGPD ou leurs cookies.</p>
+            <p>Les réservations effectuées en ligne via le formulaire sont soumises à nos conditions générales de vente (CGV) disponibles sur demande à l’accueil du restaurant. En cas de litige relatif à une réservation, une solution amiable sera privilégiée avant toute procédure judiciaire.</p>
+        </div>
+    </div>
+
+    <div class="signature-block">
+        <p>📌 Dernière modification : 23 mars 2026 — Version certifiée conforme par la direction.</p>
+        <p>Pour toute question relative aux mentions légales ou à l’infrastructure technique (GitHub, Supabase, Vercel), contactez notre Délégué à la Protection des Données : <a href="mailto:legal@robigus-restaurant.fr">legal@robigus-restaurant.fr</a></p>
+    </div>
+</main>
+
+<footer class="modern-footer">
+    <div class="footer-wrapper">
+        <div class="footer-main">
+            <div class="footer-info">
+                <h3>Robigus Restaurant</h3>
+                <p>46 RUE DE VILLEPARISIS <br>77290 MITRY-MORY</p>
+                <p>Tél: 06 59 24 88 37<br>Email: contact@robigus-restaurant.fr</p>
+            </div>
+            <div class="footer-hours">
+                <h4>Horaires</h4>
+                <ul>
+                    <li><span>Mardi - Jeudi</span> <span>12h-14h30 • 19h-22h30</span></li>
+                    <li><span>Vendredi - Samedi</span> <span>12h-14h30 • 19h-23h</span></li>
+                    <li><span>Dimanche</span> <span>12h-15h</span></li>
+                    <li><span>Lundi</span> <span>Fermé</span></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Liens utiles</h4>
+                <ul>
+                    <li><a href="carte.html">Notre Carte</a></li>
+                    <li><a href="apropos.html">À Propos</a></li>
+                    <li><a href="reservation.html">Réservation</a></li>
+                    <li><a href="mentions-legales.html">Mentions légales</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Robigus Restaurant | Tous droits réservés — Hébergé via GitHub + Vercel | Base de données Supabase</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts légers pour navigation fluide et Vercel Analytics -->
+<script>
+    // Navigation fluide pour ancres internes si besoin
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if(targetId !== "#" && targetId !== "#top" && targetId !== "") {
+                const targetElem = document.querySelector(targetId);
+                if(targetElem) {
+                    e.preventDefault();
+                    targetElem.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+    });
+
+    // Script Vercel Analytics (identique à la charte technique)
+    (function() {
+        const t = document.createElement('script');
+        t.src = 'https://vitals.vercel-insights.com/v1/script.js?' + Date.now();
+        t.dataset.vercelDsn = 'https://vitals.vercel-insights.com/v1/vitals';
+        t.dataset.vercelOrigin = window.location.origin;
+        t.crossOrigin = 'anonymous';
+        t.defer = true;
+        document.body.appendChild(t);
+    })();
+
+    // Option : petite console d'information pour l'inspecteur (respect des engagements)
+    console.log("🔐 Robigus Restaurant — Mentions légales conformes RGPD | Infrastructure: GitHub (code), Supabase (DB), Vercel (déploiement)");
+</script>
+
+</body>
+</html>
